@@ -1,0 +1,1444 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bimtek Literasi & Numerasi · Portal Interaktif</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh; background: #0a0a1a;
+            color: rgba(255, 255, 255, 0.92);
+            padding: 20px 20px 40px;
+            position: relative; overflow-x: hidden;
+        }
+        #aurora-container {
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0; pointer-events: none;
+        }
+        .aurora {
+            position: absolute; opacity: 0;
+            filter: blur(70px);
+            will-change: transform, opacity;
+            transition: opacity 15s ease-in-out;
+            border-radius: 50%; width: 100%; height: 100%;
+        }
+        .container {
+            position: relative; z-index: 1;
+            max-width: 1024px; margin: 0 auto;
+            background: rgba(10, 10, 30, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7), 0 0 40px rgba(110, 231, 183, 0.15);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        header {
+            background: linear-gradient(135deg, rgba(20, 80, 60, 0.6), rgba(80, 60, 20, 0.6));
+            padding: 32px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        header h1 {
+            font-size: 30px; font-weight: 700; color: #ffffff;
+            text-shadow: 0 0 30px rgba(110, 231, 183, 0.4);
+            letter-spacing: 0.5px;
+        }
+        header h1 span {
+            background: linear-gradient(90deg, #6ee7b7, #fbbf24, #a3e635);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        header p { color: rgba(255, 255, 255, 0.7); margin-top: 8px; font-size: 15px; }
+        .tabs {
+            display: flex; flex-wrap: wrap;
+            background: rgba(255, 255, 255, 0.04);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        .tab-btn {
+            flex: 1 1 auto; padding: 16px 18px;
+            background: transparent; border: none;
+            font-size: 14px; font-weight: 600;
+            color: rgba(255, 255, 255, 0.5);
+            cursor: pointer; transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+            text-align: center; letter-spacing: 0.3px;
+            font-family: inherit;
+        }
+        .tab-btn:hover { color: rgba(255, 255, 255, 0.85); background: rgba(255, 255, 255, 0.04); }
+        .tab-btn.active {
+            color: #ffffff;
+            border-bottom-color: #6ee7b7;
+            background: rgba(110, 231, 183, 0.08);
+            box-shadow: 0 4px 20px rgba(110, 231, 183, 0.05);
+        }
+        .content { padding: 32px; }
+        .tab-pane { display: none; animation: fadeUp 0.4s ease; }
+        .tab-pane.active { display: block; }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        h2 {
+            color: #ffffff;
+            border-left: 6px solid #6ee7b7;
+            padding-left: 16px;
+            margin-bottom: 22px;
+            font-size: 22px; font-weight: 700;
+            text-shadow: 0 0 20px rgba(110, 231, 183, 0.15);
+        }
+        h3 { color: #e2e8f0; margin: 22px 0 12px 0; font-size: 17px; font-weight: 600; }
+        p, li { line-height: 1.8; color: rgba(255, 255, 255, 0.85); }
+        ul, ol { padding-left: 24px; margin: 10px 0; }
+        li { margin-bottom: 4px; }
+
+        /* Progress */
+        .progress-wrapper {
+            margin-bottom: 22px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 14px 18px;
+        }
+        .progress-label {
+            display: flex; justify-content: space-between;
+            font-size: 13px; margin-bottom: 8px;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 600;
+        }
+        .progress-track {
+            height: 10px; background: rgba(255, 255, 255, 0.06);
+            border-radius: 10px; overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%; width: 0%;
+            background: linear-gradient(90deg, #6ee7b7, #fbbf24, #a3e635);
+            border-radius: 10px;
+            transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 0 20px rgba(110, 231, 183, 0.5);
+        }
+        .score-board {
+            text-align: center; font-weight: 700;
+            font-size: 1.1rem; color: #6ee7b7;
+            padding: 14px;
+            background: rgba(110, 231, 183, 0.08);
+            border: 1px solid rgba(110, 231, 183, 0.2);
+            border-radius: 10px; margin-bottom: 22px;
+        }
+        .score-board span {
+            font-size: 1.5rem; color: #ffffff;
+            text-shadow: 0 0 20px rgba(110, 231, 183, 0.6);
+        }
+        .quiz-item {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 18px 20px; border-radius: 12px;
+            margin-bottom: 16px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .quiz-item:hover {
+            border-color: rgba(110, 231, 183, 0.25);
+            box-shadow: 0 0 25px rgba(110, 231, 183, 0.05);
+        }
+        .quiz-item p { color: #e2e8f0; margin-bottom: 12px; }
+        .quiz-item.shake {
+            animation: shake 0.5s;
+            border-color: #f87171 !important;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-10px); }
+            40% { transform: translateX(10px); }
+            60% { transform: translateX(-6px); }
+            80% { transform: translateX(6px); }
+        }
+        .quiz-buttons { display: flex; gap: 12px; }
+        .btn-quiz {
+            flex: 1; padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px; cursor: pointer;
+            font-weight: 700; font-size: 14px;
+            transition: all 0.3s; font-family: inherit;
+        }
+        .btn-quiz:disabled { opacity: 0.4; cursor: not-allowed; }
+        .btn-mitos {
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(234, 179, 8, 0.2));
+            color: #fbbf24; border-color: rgba(251, 191, 36, 0.3);
+        }
+        .btn-mitos:hover:not(:disabled) {
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.35), rgba(234, 179, 8, 0.35));
+            box-shadow: 0 0 25px rgba(251, 191, 36, 0.25);
+        }
+        .btn-fakta {
+            background: linear-gradient(135deg, rgba(110, 231, 183, 0.15), rgba(16, 185, 129, 0.15));
+            color: #6ee7b7; border-color: rgba(110, 231, 183, 0.3);
+        }
+        .btn-fakta:hover:not(:disabled) {
+            background: linear-gradient(135deg, rgba(110, 231, 183, 0.3), rgba(16, 185, 129, 0.3));
+            box-shadow: 0 0 25px rgba(110, 231, 183, 0.25);
+        }
+        .feedback {
+            margin-top: 12px; font-weight: 600;
+            padding: 12px 16px; border-radius: 8px;
+            display: none; line-height: 1.5;
+        }
+        .feedback.correct {
+            background: rgba(110, 231, 183, 0.12);
+            color: #6ee7b7;
+            border: 1px solid rgba(110, 231, 183, 0.25);
+            display: block; animation: fadeUp 0.4s;
+        }
+        .feedback.wrong {
+            background: rgba(248, 113, 113, 0.12);
+            color: #f87171;
+            border: 1px solid rgba(248, 113, 113, 0.2);
+            display: block; animation: fadeUp 0.4s;
+        }
+        .accordion, .accordion-soal {
+            cursor: pointer; padding: 16px 20px; width: 100%;
+            text-align: left; outline: none;
+            font-size: 15px; font-weight: 700;
+            transition: 0.3s; border-radius: 10px;
+            margin-bottom: 6px; font-family: inherit;
+        }
+        .accordion {
+            background: rgba(110, 231, 183, 0.06);
+            color: #6ee7b7;
+            border: 1px solid rgba(110, 231, 183, 0.15);
+        }
+        .accordion:hover { background: rgba(110, 231, 183, 0.12); }
+        .accordion.active {
+            background: rgba(110, 231, 183, 0.15);
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+        .accordion-soal {
+            background: rgba(163, 230, 53, 0.06);
+            color: #a3e635;
+            border: 1px solid rgba(163, 230, 53, 0.15);
+        }
+        .accordion-soal:hover { background: rgba(163, 230, 53, 0.12); }
+        .accordion-soal.active {
+            background: rgba(163, 230, 53, 0.15);
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+        .panel, .panel-soal {
+            max-height: 0; overflow: hidden;
+            transition: max-height 0.4s ease-out;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 0 0 10px 10px;
+        }
+        .panel { border-left: 3px solid #6ee7b7; }
+        .panel-soal { border-left: 3px solid #a3e635; }
+        .panel-content, .panel-soal-content { padding: 18px 20px; }
+        .stimulus-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px dashed rgba(255, 255, 255, 0.15);
+            padding: 16px 20px; border-radius: 10px;
+            margin: 12px 0; font-size: 14px;
+        }
+        .stimulus-box strong { color: #fbbf24; }
+        .soal-box {
+            background: rgba(110, 231, 183, 0.05);
+            border-left: 3px solid #6ee7b7;
+            padding: 14px 18px; border-radius: 0 8px 8px 0;
+            margin: 12px 0;
+        }
+        .soal-box li { margin-bottom: 8px; }
+        .kunci-box {
+            background: rgba(251, 191, 36, 0.08);
+            border: 1px solid rgba(251, 191, 36, 0.2);
+            padding: 12px 16px; border-radius: 8px;
+            margin-top: 12px; font-size: 13px;
+        }
+        .kunci-box strong { color: #fbbf24; }
+        .highlight-box {
+            background: rgba(110, 231, 183, 0.08);
+            border: 1px solid rgba(110, 231, 183, 0.2);
+            border-radius: 10px;
+            padding: 16px 20px; margin: 16px 0;
+        }
+        .highlight-box strong { color: #6ee7b7; }
+        .reflection-box {
+            background: linear-gradient(135deg, rgba(163, 230, 53, 0.1), rgba(251, 191, 36, 0.05));
+            border: 1px solid rgba(163, 230, 53, 0.3);
+            border-radius: 12px; padding: 22px; margin: 22px 0;
+        }
+        .reflection-box h3 { color: #a3e635; margin-top: 0; font-size: 17px; }
+        .reflection-box textarea {
+            width: 100%; padding: 12px 16px;
+            border: 2px solid rgba(163, 230, 53, 0.25);
+            border-radius: 10px; font-family: inherit; font-size: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #ffffff; resize: vertical;
+            min-height: 80px; margin-top: 10px;
+        }
+        .reflection-box textarea:focus {
+            outline: none; border-color: #a3e635;
+            box-shadow: 0 0 25px rgba(163, 230, 53, 0.2);
+        }
+        .btn-save-reflection {
+            background: linear-gradient(135deg, #4d7c0f, #365314);
+            color: white; border: 1px solid rgba(163, 230, 53, 0.3);
+            padding: 10px 22px; border-radius: 8px;
+            cursor: pointer; font-weight: 700; font-size: 14px;
+            margin-top: 12px; font-family: inherit;
+        }
+        .btn-save-reflection:hover {
+            background: linear-gradient(135deg, #65a30d, #4d7c0f);
+        }
+        #reflectionSaved {
+            display: none; margin-top: 12px;
+            color: #6ee7b7; font-weight: 600;
+            padding: 10px 16px;
+            background: rgba(110, 231, 183, 0.1);
+            border: 1px solid rgba(110, 231, 183, 0.25);
+            border-radius: 8px;
+        }
+        .link-box {
+            background: rgba(251, 191, 36, 0.08);
+            border: 2px dashed rgba(251, 191, 36, 0.4);
+            border-radius: 12px;
+            padding: 22px; text-align: center; margin: 18px 0;
+        }
+        .link-box:hover {
+            background: rgba(251, 191, 36, 0.12);
+            border-color: #fbbf24;
+        }
+        .link-box a {
+            color: #fbbf24; font-weight: 700;
+            font-size: 15px; text-decoration: none;
+            word-break: break-all;
+        }
+        .qr-wrapper {
+            display: flex; align-items: center; justify-content: center;
+            gap: 30px; margin: 22px 0; flex-wrap: wrap;
+        }
+        .qr-container {
+            background: #ffffff; padding: 12px;
+            border-radius: 12px;
+            box-shadow: 0 0 30px rgba(251, 191, 36, 0.3);
+        }
+        .qr-container img { display: block; width: 160px; height: 160px; }
+        .qr-text { flex: 1; min-width: 220px; }
+        .qr-text strong { color: #fbbf24; display: block; margin-bottom: 8px; font-size: 16px; }
+        .qr-text p { font-size: 14px; color: rgba(255, 255, 255, 0.75); }
+        @media (max-width: 640px) {
+            .qr-wrapper { flex-direction: column; }
+            .qr-text { text-align: center; }
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px; margin-top: 16px;
+        }
+        @media (max-width: 768px) { .grid-3 { grid-template-columns: 1fr; } }
+        .reveal-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px; padding: 22px;
+            cursor: pointer; text-align: center;
+            transition: all 0.3s ease; min-height: 110px;
+        }
+        .reveal-card:hover {
+            border-color: rgba(163, 230, 53, 0.4);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 40px rgba(163, 230, 53, 0.15);
+        }
+        .reveal-card .front {
+            font-weight: 700; font-size: 1.1rem; color: #ffffff;
+        }
+        .reveal-card .back {
+            display: none; margin-top: 16px;
+            text-align: left; font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.85); line-height: 1.7;
+        }
+        .reveal-card.active {
+            background: linear-gradient(135deg, rgba(163, 230, 53, 0.15), rgba(251, 191, 36, 0.1));
+            border-color: #a3e635;
+            box-shadow: 0 0 35px rgba(163, 230, 53, 0.2);
+        }
+        .reveal-card.active .back { display: block; animation: fadeUp 0.5s; }
+        .step-container { display: flex; gap: 12px; margin-top: 20px; }
+        @media (max-width: 768px) { .step-container { flex-direction: column; } }
+        .step-box {
+            flex: 1; padding: 22px; border-radius: 14px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 2px dashed rgba(110, 231, 183, 0.3);
+            cursor: pointer; text-align: center;
+            transition: all 0.3s;
+        }
+        .step-box:hover {
+            background: rgba(110, 231, 183, 0.08);
+            transform: translateY(-4px);
+            border-color: #6ee7b7;
+        }
+        .step-box.active {
+            background: linear-gradient(135deg, rgba(110, 231, 183, 0.2), rgba(251, 191, 36, 0.15));
+            border-style: solid;
+            border-color: #6ee7b7;
+        }
+        .step-box h4 { margin: 0 0 10px 0; color: #ffffff; font-size: 15px; }
+        .step-box p { margin: 0; color: rgba(255, 255, 255, 0.8); font-size: 14px; }
+        .step-detail {
+            display: none; margin-top: 20px; padding: 22px;
+            background: rgba(110, 231, 183, 0.05);
+            border-left: 4px solid #6ee7b7;
+            border-radius: 10px;
+            animation: fadeUp 0.5s;
+        }
+        .step-detail.active { display: block; }
+        .step-detail h3 { margin-top: 0; color: #6ee7b7; }
+        .tka-types {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px; margin-top: 16px;
+        }
+        @media (max-width: 768px) { .tka-types { grid-template-columns: 1fr; } }
+        .tka-type {
+            background: rgba(163, 230, 53, 0.06);
+            padding: 18px; border-radius: 12px;
+            border-top: 4px solid #a3e635;
+        }
+        .tka-type h4 { margin: 0 0 10px 0; color: #a3e635; font-size: 15px; }
+        .tka-type p { font-size: 14px; }
+        .comparison-table {
+            width: 100%; border-collapse: collapse;
+            margin: 16px 0; font-size: 14px;
+            border-radius: 12px; overflow: hidden;
+        }
+        .comparison-table th {
+            background: rgba(45, 106, 79, 0.5);
+            color: white; padding: 14px 16px;
+            text-align: left; font-weight: 600;
+        }
+        .comparison-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.85);
+        }
+        .comparison-table tr:nth-child(even) { background: rgba(255, 255, 255, 0.02); }
+        .form-group { margin-bottom: 18px; }
+        .form-group label {
+            display: block; font-weight: 600;
+            margin-bottom: 8px; color: #6ee7b7;
+            font-size: 14px;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 12px 16px;
+            border: 2px solid rgba(255, 255, 255, 0.12);
+            border-radius: 10px; font-family: inherit;
+            font-size: 15px; background: rgba(255, 255, 255, 0.05);
+            color: #ffffff; transition: 0.3s;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none; border-color: #6ee7b7;
+            background: rgba(255, 255, 255, 0.08);
+        }
+        .form-group select option { background: #0a0a1a; color: white; }
+        .btn-submit {
+            background: linear-gradient(135deg, #2d6a4f, #1a3a2b);
+            color: white; border: 1px solid rgba(110, 231, 183, 0.2);
+            padding: 14px 32px; border-radius: 10px;
+            cursor: pointer; font-weight: 700; font-size: 15px;
+            font-family: inherit;
+        }
+        .btn-submit:hover:not(:disabled) {
+            background: linear-gradient(135deg, #3d8a6f, #2a5a3b);
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px rgba(110, 231, 183, 0.3);
+        }
+        .btn-submit:disabled { background: #333; cursor: not-allowed; opacity: 0.5; }
+        #rtlStatus { margin-left: 15px; font-weight: 600; }
+        .counter {
+            text-align: center; padding: 18px;
+            background: linear-gradient(135deg, rgba(110, 231, 183, 0.15), rgba(251, 191, 36, 0.1));
+            border: 1px solid rgba(110, 231, 183, 0.25);
+            color: #ffffff; border-radius: 12px;
+            margin-bottom: 22px; font-size: 15px; font-weight: 600;
+        }
+        .counter span {
+            font-weight: 900; font-size: 1.8rem;
+            color: #6ee7b7; margin: 0 6px;
+        }
+        #rtlWall {
+            margin-top: 25px;
+            display: grid; grid-template-columns: 1fr; gap: 16px;
+        }
+        .rtl-note {
+            background: linear-gradient(135deg, rgba(110, 231, 183, 0.1), rgba(251, 191, 36, 0.05));
+            padding: 20px; border-radius: 12px;
+            border-left: 5px solid #6ee7b7;
+            animation: fadeUp 0.5s;
+        }
+        .rtl-note h4 { margin: 0 0 12px 0; color: #6ee7b7; font-size: 15px; }
+        .rtl-note p { margin: 6px 0; font-size: 14px; }
+        .rtl-note strong { color: #fbbf24; }
+        .footer {
+            text-align: center; padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            color: rgba(255, 255, 255, 0.35);
+            font-size: 13px;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+        }
+        #confetti-container {
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none; z-index: 9999; overflow: hidden;
+        }
+        .confetti-piece {
+            position: absolute; width: 10px; height: 10px;
+            opacity: 0.9; will-change: transform, opacity;
+        }
+        #backToTop {
+            position: fixed; bottom: 25px; right: 25px;
+            width: 48px; height: 48px;
+            background: linear-gradient(135deg, #2d6a4f, #1a3a2b);
+            color: white; border: 1px solid rgba(110, 231, 183, 0.3);
+            border-radius: 50%; cursor: pointer;
+            font-size: 20px; font-weight: bold;
+            display: none; align-items: center; justify-content: center;
+            z-index: 1000;
+        }
+        #backToTop.show { display: flex; }
+        @media (max-width: 640px) {
+            body { padding: 12px; }
+            .container { border-radius: 16px; }
+            header { padding: 22px; }
+            header h1 { font-size: 20px; }
+            .tab-btn { font-size: 11px; padding: 12px 4px; }
+            .content { padding: 18px; }
+            h2 { font-size: 18px; }
+            .quiz-buttons { flex-direction: column; }
+        }
+        ::-webkit-scrollbar { width: 6px; background: transparent; }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(110, 231, 183, 0.3);
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="aurora-container"></div>
+    <div id="confetti-container"></div>
+    <button id="backToTop" onclick="window.scrollTo({top:0, behavior:'smooth'})">↑</button>
+
+    <div class="container">
+        <header>
+            <h1>🎓 <span>Bimtek Literasi & Numerasi</span></h1>
+            <p>Portal Interaktif Peserta ✦ Fokus: Guru Lintas Mata Pelajaran</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="kp2">📘 KP 2: Miskonsepsi</button>
+            <button class="tab-btn" data-tab="kp3">🌐 KP 3: Strategi</button>
+            <button class="tab-btn" data-tab="kp4">📐 KP 4: Perencanaan</button>
+            <button class="tab-btn" data-tab="kp5">📋 KP 5: RTL</button>
+        </div>
+
+        <div class="content">
+
+            <!-- ======================= KP 2 ======================= -->
+            <div id="kp2" class="tab-pane active">
+                <h2>KP 2: Konsep & Dekonstruksi Miskonsepsi</h2>
+                <p>Mari luruskan pemahaman yang salah (mitos) tentang literasi dan numerasi. Jawab 7 pernyataan berikut! <em style="color:#a3e635;">(Urutan soal diacak setiap refresh)</em></p>
+
+                <div class="progress-wrapper">
+                    <div class="progress-label">
+                        <span>📊 Progres Kuis</span>
+                        <span><span id="progressText">0</span> / 7 soal</span>
+                    </div>
+                    <div class="progress-track">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                </div>
+
+                <div class="score-board">Skor Anda: <span id="score">0</span> / 7</div>
+
+                <div class="quiz-item" data-quiz="1">
+                    <p><strong>1.</strong> Literasi hanya kemampuan membaca dan menulis.</p>
+                    <div class="quiz-buttons">
+                        <button class="btn-quiz btn-mitos" onclick="checkAnswer(this, true, 'Tepat! Ini MITOS. Literasi mencakup kemampuan memahami, menggunakan, dan merefleksikan teks untuk memecahkan masalah.')">MITOS</button>
+                        <button class="btn-quiz btn-fakta" onclick="checkAnswer(this, false, 'Kurang tepat. Ini MITOS. Literasi jauh lebih luas dari sekadar baca-tulis.')">FAKTA</button>
+                    </div>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="quiz-item" data-quiz="2">
+                    <p><strong>2.</strong> Literasi hanya berkaitan dengan buku.</p>
+                    <div class="quiz-buttons">
+                        <button class="btn-quiz btn-mitos" onclick="checkAnswer(this, true, 'Tepat! Ini MITOS. Literasi mencakup teks multimodal: artikel digital, infografis, video, data, dan lainnya.')">MITOS</button>
+                        <button class="btn-quiz btn-fakta" onclick="checkAnswer(this, false, 'Kurang tepat. Ini MITOS. Literasi modern mencakup berbagai bentuk teks, tidak hanya buku.')">FAKTA</button>
+                    </div>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="quiz-item" data-quiz="3">
+                    <p><strong>3.</strong> Numerasi sama dengan matematika.</p>
+                    <div class="quiz-buttons">
+                        <button class="btn-quiz btn-mitos" onclick="checkAnswer(this, true, 'Tepat! Ini MITOS. Numerasi adalah kemampuan berpikir menggunakan konsep matematika untuk menyelesaikan masalah sehari-hari.')">MITOS</button>
+                        <button class="btn-quiz btn-fakta" onclick="checkAnswer(this, false, 'Kurang tepat. Ini MITOS. Numerasi bukan sekadar matematika, tapi aplikasinya di kehidupan nyata.')">FAKTA</button>
+                    </div>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="quiz-item" data-quiz="4">
+                    <p><strong>4.</strong> Numerasi hanya kemampuan berhitung.</p>
+                    <div class="quiz-buttons">
+                        <button class="btn-quiz btn-mitos" onclick="checkAnswer(this, true, 'Tepat! Ini MITOS. Numerasi mencakup penalaran, pemodelan, pemecahan masalah, dan pengambilan keputusan berbasis data.')">MITOS</button>
+                        <button class="btn-quiz btn-fakta" onclick="checkAnswer(this, false, 'Kurang tepat. Ini MITOS. Berhitung hanya level dasar (Level 1).')">FAKTA</button>
+                    </div>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="quiz-item" data-quiz="5">
+                    <p><strong>5.</strong> Numerasi hanya tanggung jawab guru matematika.</p>
+                    <div class="quiz-buttons">
+                        <button class="btn-quiz btn-mitos" onclick="checkAnswer(this, true, 'Tepat! Ini MITOS. Seluruh warga sekolah bertanggung jawab, termasuk guru mapel lain.')">MITOS</button>
+                        <button class="btn-quiz btn-fakta" onclick="checkAnswer(this, false, 'Kurang tepat. Ini MITOS. Ini adalah tanggung jawab bersama lintas mata pelajaran.')">FAKTA</button>
+                    </div>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="quiz-item" data-quiz="6">
+                    <p><strong>6.</strong> Literasi dan numerasi merupakan kompetensi dasar yang harus dikembangkan pada seluruh peserta didik, bukan hanya pada mata pelajaran tertentu.</p>
+                    <div class="quiz-buttons">
+                        <button class="btn-quiz btn-mitos" onclick="checkAnswer(this, false, 'Kurang tepat. Ini FAKTA. Sesuai modul, literasi dan numerasi adalah kompetensi dasar yang harus dikembangkan pada SELURUH peserta didik.')">MITOS</button>
+                        <button class="btn-quiz btn-fakta" onclick="checkAnswer(this, true, 'Tepat! Ini FAKTA. Literasi dan numerasi adalah kompetensi dasar lintas mata pelajaran.')">FAKTA</button>
+                    </div>
+                    <div class="feedback"></div>
+                </div>
+
+                <div class="quiz-item" data-quiz="7">
+                    <p><strong>7.</strong> Guru mata pelajaran apa pun (IPA, IPS, Seni, PJOK, Agama) dapat mengintegrasikan literasi dan numerasi dalam pembelajarannya.</p>
+                    <div class="quiz-buttons">
+                        <button class="btn-quiz btn-mitos" onclick="checkAnswer(this, false, 'Kurang tepat. Ini FAKTA. Setiap guru dapat mengintegrasikan literasi dan numerasi di kelasnya.')">MITOS</button>
+                        <button class="btn-quiz btn-fakta" onclick="checkAnswer(this, true, 'Tepat! Ini FAKTA. Setiap guru lintas mapel dapat dan harus mengintegrasikan literasi & numerasi.')">FAKTA</button>
+                    </div>
+                    <div class="feedback"></div>
+                </div>
+
+                <div id="quizComplete" class="highlight-box" style="display:none; text-align:center;">
+                    🎉 <strong>Selamat!</strong> Anda telah menyelesaikan semua pertanyaan.
+                </div>
+
+                <div class="reflection-box">
+                    <h3>💭 Refleksi Peserta</h3>
+                    <p>Tuliskan <strong>satu miskonsepsi</strong> yang berhasil Anda luruskan setelah mengikuti KP 2 ini:</p>
+                    <textarea id="reflectionInput" placeholder="Contoh: Saya dulu mengira numerasi hanya soal hitung-hitungan..."></textarea>
+                    <button class="btn-save-reflection" onclick="saveReflection()">💾 Simpan Refleksi</button>
+                    <div id="reflectionSaved">✅ Refleksi Anda berhasil disimpan!</div>
+                </div>
+
+                <h2 style="margin-top:34px;">🧠 Level Kognitif Literasi & Numerasi</h2>
+                <button class="accordion">📖 Level Kognitif Literasi Membaca</button>
+                <div class="panel">
+                    <div class="panel-content">
+                        <ul>
+                            <li><strong>Level 1: Menemukan Informasi</strong> — Menemukan, mengidentifikasi, dan mendeskripsikan ide/informasi eksplisit.</li>
+                            <li><strong>Level 2: Memahami</strong> — Membandingkan, mengontraskan, membuat kesimpulan, mengelompokkan ide.</li>
+                            <li><strong>Level 3: Mengevaluasi & Merefleksi</strong> — Menganalisis, memprediksi, menilai konten, bahasa, dan unsur teks.</li>
+                        </ul>
+                    </div>
+                </div>
+                <button class="accordion">🔢 Level Kognitif Numerasi</button>
+                <div class="panel">
+                    <div class="panel-content">
+                        <ul>
+                            <li><strong>Level 1: Pengetahuan & Pemahaman</strong> — Menghitung, memahami informasi, mengelompokkan.</li>
+                            <li><strong>Level 2: Aplikasi</strong> — Memodelkan, mengaplikasikan, menginterpretasikan, menyimpulkan.</li>
+                            <li><strong>Level 3: Penalaran</strong> — Menganalisis, memecahkan masalah, mengevaluasi.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h2 style="margin-top:34px;">📊 Analisis Data Daya Serap TKA</h2>
+                <div class="link-box">
+                    <a href="https://tka.kemendikdasmen.go.id/hasiltka/daya-serap" target="_blank">
+                        🔗 https://tka.kemendikdasmen.go.id/hasiltka/daya-serap
+                    </a>
+                </div>
+                <div class="qr-wrapper">
+                    <div class="qr-container">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https%3A%2F%2Ftka.kemendikdasmen.go.id%2Fhasiltka%2Fdaya-serap&color=4d7c0f&bgcolor=ffffff" alt="QR Code TKA">
+                    </div>
+                    <div class="qr-text">
+                        <strong>📱 Scan dengan HP Anda</strong>
+                        <p>Arahkan kamera HP ke QR Code untuk langsung membuka laman data daya serap TKA.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ======================= KP 3 ======================= -->
+            <div id="kp3" class="tab-pane">
+                <h2>KP 3: Strategi Penguatan di 3 Lingkungan</h2>
+                <p>Klik setiap kartu untuk melihat aksi nyatanya!</p>
+                <div class="grid-3">
+                    <div class="reveal-card" onclick="this.classList.toggle('active')">
+                        <div class="front">🏫 Lingkungan Fisik</div>
+                        <div class="back">
+                            • Menempel poster, infografis, atau karya siswa.<br>
+                            • Menyediakan sudut baca dengan teks beragam.<br>
+                            • Menata kelas yang mendukung kolaborasi.
+                        </div>
+                    </div>
+                    <div class="reveal-card" onclick="this.classList.toggle('active')">
+                        <div class="front">🤝 Lingkungan Sosio-Afektif</div>
+                        <div class="back">
+                            • Budaya kelas yang menghargai pertanyaan kritis.<br>
+                            • Afirmasi positif saat siswa berpendapat.<br>
+                            • Menumbuhkan rasa aman untuk berekspresi.
+                        </div>
+                    </div>
+                    <div class="reveal-card" onclick="this.classList.toggle('active')">
+                        <div class="front">📚 Lingkungan Akademik</div>
+                        <div class="back">
+                            • Asesmen beragam: proyek, portofolio, presentasi.<br>
+                            • Aktivitas "Memahami - Mengaplikasi - Merefleksi".<br>
+                            • Mengaitkan materi dengan konteks dunia nyata.
+                        </div>
+                    </div>
+                </div>
+
+                <h2 style="margin-top:34px;">🎯 Integrasi Literasi & Numerasi per Mata Pelajaran</h2>
+                <div class="grid-3">
+                    <div class="reveal-card" onclick="this.classList.toggle('active')">
+                        <div class="front">🔬 Guru IPA</div>
+                        <div class="back">
+                            <strong>Literasi:</strong> Membaca laporan eksperimen, artikel sains.<br><br>
+                            <strong>Numerasi:</strong> Membaca grafik/tabel data, menghitung laju reaksi, persentase, skala.
+                        </div>
+                    </div>
+                    <div class="reveal-card" onclick="this.classList.toggle('active')">
+                        <div class="front">🌍 Guru IPS/Sejarah</div>
+                        <div class="back">
+                            <strong>Literasi:</strong> Menganalisis sumber primer, mengevaluasi berita, membaca peta.<br><br>
+                            <strong>Numerasi:</strong> Membaca statistik sosial-ekonomi, garis waktu, skala peta.
+                        </div>
+                    </div>
+                    <div class="reveal-card" onclick="this.classList.toggle('active')">
+                        <div class="front">🏛️ Guru PKN</div>
+                        <div class="back">
+                            <strong>Literasi:</strong> Menganalisis teks UUD 1945, putusan MK, artikel HAM.<br><br>
+                            <strong>Numerasi:</strong> Membaca data Pemilu, APBN, indeks demokrasi, rasio gini.
+                        </div>
+                    </div>
+                    <div class="reveal-card" onclick="this.classList.toggle('active')">
+                        <div class="front">🎨 Guru Seni Budaya</div>
+                        <div class="back">
+                            <strong>Literasi:</strong> Membaca notasi musik, narasi drama, kritik seni.<br><br>
+                            <strong>Numerasi:</strong> Pola irama, proporsi, geometri, hitungan ketukan.
+                        </div>
+                    </div>
+                    <div class="reveal-card" onclick="this.classList.toggle('active')">
+                        <div class="front">🏃 Guru PJOK</div>
+                        <div class="back">
+                            <strong>Literasi:</strong> Membaca instruksi permainan, peraturan, data kesehatan.<br><br>
+                            <strong>Numerasi:</strong> Skor, waktu, IMT, statistik pertandingan, denyut nadi.
+                        </div>
+                    </div>
+                    <div class="reveal-card" onclick="this.classList.toggle('active')">
+                        <div class="front">🕌 Guru Agama</div>
+                        <div class="back">
+                            <strong>Literasi:</strong> Membaca dan menafsirkan teks suci, konteks historis.<br><br>
+                            <strong>Numerasi:</strong> Hitungan zakat, warisan, kalender hijriah.
+                        </div>
+                    </div>
+                    <div class="reveal-card" onclick="this.classList.toggle('active')">
+                        <div class="front">💻 Guru TIK/Informatika</div>
+                        <div class="back">
+                            <strong>Literasi:</strong> Membaca dokumentasi, memahami algoritma.<br><br>
+                            <strong>Numerasi:</strong> Logika boolean, sistem bilangan, komputasi, statistik data.
+                        </div>
+                    </div>
+                </div>
+
+                <h2 style="margin-top:38px;">📝 Contoh Soal TKA per Mata Pelajaran</h2>
+                <p>Klik setiap mapel untuk melihat contoh soal TKA-style.</p>
+
+                <button class="accordion-soal">🔬 Contoh Soal TKA — IPA</button>
+                <div class="panel-soal">
+                    <div class="panel-soal-content">
+                        <div class="stimulus-box">
+                            <strong>Stimulus:</strong><br>
+                            Data tinggi tanaman kacang hijau (cm) selama 7 hari dengan 3 perlakuan:
+                            <table style="width:100%; margin-top:10px; border-collapse: collapse; font-size:13px;">
+                                <tr style="background: rgba(110,231,183,0.15);">
+                                    <th style="padding:8px; border:1px solid rgba(255,255,255,0.1);">Hari</th>
+                                    <th style="padding:8px; border:1px solid rgba(255,255,255,0.1);">A (cm)</th>
+                                    <th style="padding:8px; border:1px solid rgba(255,255,255,0.1);">B (cm)</th>
+                                    <th style="padding:8px; border:1px solid rgba(255,255,255,0.1);">C (cm)</th>
+                                </tr>
+                                <tr><td style="padding:8px; border:1px solid rgba(255,255,255,0.1);">1</td><td style="padding:8px; border:1px solid rgba(255,255,255,0.1);">2.0</td><td style="padding:8px; border:1px solid rgba(255,255,255,0.1);">2.0</td><td style="padding:8px; border:1px solid rgba(255,255,255,0.1);">2.0</td></tr>
+                                <tr><td style="padding:8px; border:1px solid rgba(255,255,255,0.1);">3</td><td style="padding:8px; border:1px solid rgba(255,255,255,0.1);">3.5</td><td style="padding:8px; border:1px solid rgba(255,255,255,0.1);">4.8</td><td style="padding:8px; border:1px solid rgba(255,255,255,0.1);">3.0</td></tr>
+                                <tr><td style="padding:8px; border:1px solid rgba(255,255,255,0.1);">5</td><td style="padding:8px; border:1px solid rgba(255,255,255,0.1);">5.0</td><td style="padding:8px; border:1px solid rgba(255,255,255,0.1);">7.5</td><td style="padding:8px; border:1px solid rgba(255,255,255,0.1);">4.5</td></tr>
+                                <tr><td style="padding:8px; border:1px solid rgba(255,255,255,0.1);">7</td><td style="padding:8px; border:1px solid rgba(255,255,255,0.1);">6.8</td><td style="padding:8px; border:1px solid rgba(255,255,255,0.1);">10.2</td><td style="padding:8px; border:1px solid rgba(255,255,255,0.1);">6.0</td></tr>
+                            </table>
+                        </div>
+                        <div class="soal-box">
+                            <strong>Soal:</strong>
+                            <ol>
+                                <li>Perlakuan mana yang menghasilkan pertumbuhan paling cepat pada hari ke-7? Berapa persen lebih cepat dibandingkan A?</li>
+                                <li>Hitung rata-rata pertumbuhan harian perlakuan B dari hari 1 sampai 7!</li>
+                                <li>Faktor apa yang paling berpengaruh? Jelaskan dengan bukti dari tabel!</li>
+                            </ol>
+                        </div>
+                        <div class="kunci-box">
+                            <strong>💡 Kunci:</strong> (1) B lebih cepat 50% dari A. (2) Rata-rata B = (10.2-2.0)/6 = 1.37 cm/hari. (3) Cahaya dan pupuk berpengaruh signifikan.
+                        </div>
+                    </div>
+                </div>
+
+                <button class="accordion-soal">🌍 Contoh Soal TKA — IPS / Sejarah</button>
+                <div class="panel-soal">
+                    <div class="panel-soal-content">
+                        <div class="stimulus-box">
+                            <strong>Stimulus:</strong><br>
+                            Data kependudukan Indonesia 2020-2024:
+                            <table style="width:100%; margin-top:10px; border-collapse: collapse; font-size:13px;">
+                                <tr style="background: rgba(110,231,183,0.15);">
+                                    <th style="padding:8px; border:1px solid rgba(255,255,255,0.1);">Tahun</th>
+                                    <th style="padding:8px; border:1px solid rgba(255,255,255,0.1);">Penduduk (juta)</th>
+                                    <th style="padding:8px; border:1px solid rgba(255,255,255,0.1);">Urbanisasi (%)</th>
+                                </tr>
+                                <tr><td style="padding:8px; border:1px solid rgba(255,255,255,0.1);">2020</td><td style="padding:8px; border:1px solid rgba(255,255,255,0.1);">270.2</td><td style="padding:8px; border:1px solid rgba(255,255,255,0.1);">56.7</td></tr>
+                                <tr><td style="padding:8px; border:1px solid rgba(255,255,255,0.1);">2022</td><td style="padding:8px; border:1px solid rgba(255,255,255,0.1);">275.8</td><td style="padding:8px; border:1px solid rgba(255,255,255,0.1);">58.2</td></tr>
+                                <tr><td style="padding:8px; border:1px solid rgba(255,255,255,0.1);">2024</td><td style="padding:8px; border:1px solid rgba(255,255,255,0.1);">281.6</td><td style="padding:8px; border:1px solid rgba(255,255,255,0.1);">60.1</td></tr>
+                            </table>
+                        </div>
+                        <div class="soal-box">
+                            <strong>Soal:</strong>
+                            <ol>
+                                <li>Berapa persen pertumbuhan penduduk dari 2020 ke 2024?</li>
+                                <li>Apa dampak urbanisasi yang meningkat? Berikan 2 contoh.</li>
+                                <li>Apakah laju pertumbuhan penduduk menurun atau meningkat tiap 2 tahun? Buktikan!</li>
+                            </ol>
+                        </div>
+                        <div class="kunci-box">
+                            <strong>💡 Kunci:</strong> (1) ((281.6-270.2)/270.2) × 100% ≈ 4.22%. (2) Permukiman kumuh, kemacetan. (3) 2020-2022: 2.07%; 2022-2024: 2.10% → sedikit meningkat.
+                        </div>
+                    </div>
+                </div>
+
+                <button class="accordion-soal">🏛️ Contoh Soal TKA — PKN</button>
+                <div class="panel-soal">
+                    <div class="panel-soal-content">
+                        <div class="stimulus-box">
+                            <strong>Stimulus:</strong><br>
+                            Hasil Pemilu 2024 (100.000 suara sah, 50 kursi DPRD, ambang batas 4%):
+                            <table style="width:100%; margin-top:10px; border-collapse: collapse; font-size:13px;">
+                                <tr style="background: rgba(110,231,183,0.15);">
+                                    <th style="padding:8px; border:1px solid rgba(255,255,255,0.1);">Partai</th>
+                                    <th style="padding:8px; border:1px solid rgba(255,255,255,0.1);">Suara</th>
+                                    <th style="padding:8px; border:1px solid rgba(255,255,255,0.1);">Persentase</th>
+                                </tr>
+                                <tr><td style="padding:8px; border:1px solid rgba(255,255,255,0.1);">A</td><td style="padding:8px; border:1px solid rgba(255,255,255,0.1);">35.000</td><td style="padding:8px; border:1px solid rgba(255,255,255,0.1);">?</td></tr>
+                                <tr><td style="padding:8px; border:1px solid rgba(255,255,255,0.1);">B</td><td style="padding:8px; border:1px solid rgba(255,255,255,0.1);">25.000</td><td style="padding:8px; border:1px solid rgba(255,255,255,0.1);">?</td></tr>
+                                <tr><td style="padding:8px; border:1px solid rgba(255,255,255,0.1);">C</td><td style="padding:8px; border:1px solid rgba(255,255,255,0.1);">20.000</td><td style="padding:8px; border:1px solid rgba(255,255,255,0.1);">?</td></tr>
+                                <tr><td style="padding:8px; border:1px solid rgba(255,255,255,0.1);">D</td><td style="padding:8px; border:1px solid rgba(255,255,255,0.1);">15.000</td><td style="padding:8px; border:1px solid rgba(255,255,255,0.1);">?</td></tr>
+                                <tr><td style="padding:8px; border:1px solid rgba(255,255,255,0.1);">E</td><td style="padding:8px; border:1px solid rgba(255,255,255,0.1);">5.000</td><td style="padding:8px; border:1px solid rgba(255,255,255,0.1);">?</td></tr>
+                            </table>
+                        </div>
+                        <div class="soal-box">
+                            <strong>Soal:</strong>
+                            <ol>
+                                <li>Hitung persentase suara masing-masing partai!</li>
+                                <li>Partai mana yang TIDAK lolos ambang batas 4%?</li>
+                                <li>Berapa kursi yang didapat Partai A jika 35% dari 50 kursi?</li>
+                                <li>Mengapa ambang batas parlemen penting dalam demokrasi?</li>
+                            </ol>
+                        </div>
+                        <div class="kunci-box">
+                            <strong>💡 Kunci:</strong> (1) A=35%, B=25%, C=20%, D=15%, E=5%. (2) Semua lolos. (3) 17 atau 18 kursi. (4) Menyederhanakan sistem multipartai.
+                        </div>
+                    </div>
+                </div>
+
+                <button class="accordion-soal">🎨 Contoh Soal TKA — Seni Budaya</button>
+                <div class="panel-soal">
+                    <div class="panel-soal-content">
+                        <div class="stimulus-box">
+                            <strong>Stimulus:</strong><br>
+                            Notasi irama 4/4:
+                            <div style="background:#fff; color:#000; padding:12px; border-radius:8px; margin-top:10px; font-family:monospace; font-size:15px; text-align:center;">
+                                ♩ ♩ ♪♪ ♩ | ♩. ♪ ♩ ♩ | ♪♪ ♪♪ ♩ ♩ | ♩ ♩ ♩ 𝄽
+                            </div>
+                        </div>
+                        <div class="soal-box">
+                            <strong>Soal:</strong>
+                            <ol>
+                                <li>Berapa total ketukan dalam 4 bar tersebut?</li>
+                                <li>Bar ke berapa yang memiliki pola berbeda? Jelaskan!</li>
+                                <li>Jika tempo 90 BPM, berapa durasi total 4 bar?</li>
+                            </ol>
+                        </div>
+                        <div class="kunci-box">
+                            <strong>💡 Kunci:</strong> (1) 16 ketukan. (2) Bar 3 (semua ½ ketukan). (3) 16/90 × 60 ≈ 10,67 detik.
+                        </div>
+                    </div>
+                </div>
+
+                <button class="accordion-soal">🏃 Contoh Soal TKA — PJOK</button>
+                <div class="panel-soal">
+                    <div class="panel-soal-content">
+                        <div class="stimulus-box">
+                            <strong>Stimulus:</strong><br>
+                            Data denyut nadi 5 siswa sebelum & sesudah aerobik:
+                            <table style="width:100%; margin-top:10px; border-collapse: collapse; font-size:13px;">
+                                <tr style="background: rgba(110,231,183,0.15);">
+                                    <th style="padding:8px; border:1px solid rgba(255,255,255,0.1);">Siswa</th>
+                                    <th style="padding:8px; border:1px solid rgba(255,255,255,0.1);">Sebelum</th>
+                                    <th style="padding:8px; border:1px solid rgba(255,255,255,0.1);">Sesudah</th>
+                                </tr>
+                                <tr><td style="padding:8px; border:1px solid rgba(255,255,255,0.1);">Andi</td><td style="padding:8px; border:1px solid rgba(255,255,255,0.1);">72</td><td style="padding:8px; border:1px solid rgba(255,255,255,0.1);">132</td></tr>
+                                <tr><td style="padding:8px; border:1px solid rgba(255,255,255,0.1);">Budi</td><td style="padding:8px; border:1px solid rgba(255,255,255,0.1);">80</td><td style="padding:8px; border:1px solid rgba(255,255,255,0.1);">160</td></tr>
+                                <tr><td style="padding:8px; border:1px solid rgba(255,255,255,0.1);">Citra</td><td style="padding:8px; border:1px solid rgba(255,255,255,0.1);">68</td><td style="padding:8px; border:1px solid rgba(255,255,255,0.1);">108</td></tr>
+                                <tr><td style="padding:8px; border:1px solid rgba(255,255,255,0.1);">Dina</td><td style="padding:8px; border:1px solid rgba(255,255,255,0.1);">76</td><td style="padding:8px; border:1px solid rgba(255,255,255,0.1);">140</td></tr>
+                                <tr><td style="padding:8px; border:1px solid rgba(255,255,255,0.1);">Eka</td><td style="padding:8px; border:1px solid rgba(255,255,255,0.1);">84</td><td style="padding:8px; border:1px solid rgba(255,255,255,0.1);">144</td></tr>
+                            </table>
+                        </div>
+                        <div class="soal-box">
+                            <strong>Soal:</strong>
+                            <ol>
+                                <li>Hitung rata-rata denyut nadi sebelum dan sesudah olahraga!</li>
+                                <li>Siapa yang memiliki persentase kenaikan tertinggi?</li>
+                                <li>Jika DNM Andi = 220-16 = 204, apakah 132 bpm dalam zona aman (60-85%)?</li>
+                            </ol>
+                        </div>
+                        <div class="kunci-box">
+                            <strong>💡 Kunci:</strong> (1) Sebelum=76 bpm; Sesudah=136,8 bpm. (2) Budi = 100%. (3) Zona aman 122-173 bpm → 132 aman.
+                        </div>
+                    </div>
+                </div>
+
+                <button class="accordion-soal">🕌 Contoh Soal TKA — Agama</button>
+                <div class="panel-soal">
+                    <div class="panel-soal-content">
+                        <div class="stimulus-box">
+                            <strong>Stimulus:</strong><br>
+                            Harta Pak Ahmad akhir tahun:
+                            <ul style="margin-left:20px;">
+                                <li>Tabungan: Rp 80.000.000</li>
+                                <li>Emas: 100 gram (Rp 1.200.000/gram)</li>
+                                <li>Utang jatuh tempo: Rp 20.000.000</li>
+                            </ul>
+                            <em style="font-size:12px;">Nishab zakat mal = 85 gram emas. Kadar zakat = 2,5%.</em>
+                        </div>
+                        <div class="soal-box">
+                            <strong>Soal:</strong>
+                            <ol>
+                                <li>Hitung total harta bersih setelah dikurangi utang!</li>
+                                <li>Berapa nishab zakat mal dalam rupiah? Apakah wajib zakat?</li>
+                                <li>Berapa zakat mal yang harus dikeluarkan?</li>
+                            </ol>
+                        </div>
+                        <div class="kunci-box">
+                            <strong>💡 Kunci:</strong> (1) 80jt + 120jt - 20jt = Rp 180.000.000. (2) Nishab = 85 × 1,2jt = Rp 102.000.000. Wajib. (3) Zakat = 2,5% × 180jt = Rp 4.500.000.
+                        </div>
+                    </div>
+                </div>
+
+                <button class="accordion-soal">💻 Contoh Soal TKA — TIK / Informatika</button>
+                <div class="panel-soal">
+                    <div class="panel-soal-content">
+                        <div class="stimulus-box">
+                            <strong>Stimulus:</strong><br>
+                            Dua algoritma pencarian data pada array 1.000 elemen terurut:
+                            <ul style="margin-left:20px;">
+                                <li><strong>Algoritma X (Linear Search):</strong> memeriksa setiap elemen.</li>
+                                <li><strong>Algoritma Y (Binary Search):</strong> membagi array menjadi dua secara berulang.</li>
+                            </ul>
+                        </div>
+                        <div class="soal-box">
+                            <strong>Soal:</strong>
+                            <ol>
+                                <li>Berapa maksimal langkah Algoritma X untuk kasus terburuk?</li>
+                                <li>Berapa maksimal langkah Algoritma Y? (log₂ basis 2)</li>
+                                <li>Berapa kali lebih efisien Algoritma Y?</li>
+                                <li>Mengapa Algoritma Y hanya bisa digunakan pada data terurut?</li>
+                            </ol>
+                        </div>
+                        <div class="kunci-box">
+                            <strong>💡 Kunci:</strong> (1) 1.000 langkah. (2) log₂(1000) ≈ 10 langkah. (3) 100× lebih efisien. (4) Perlu perbandingan nilai tengah untuk arah pencarian.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ======================= KP 4 ======================= -->
+            <div id="kp4" class="tab-pane">
+                <h2>KP 4: Perencanaan Pembelajaran Berbasis TKA</h2>
+                <div class="highlight-box">
+                    <strong>Prinsip:</strong> Mulai dari Tujuan → Rancang Asesmen → Baru Rancang Aktivitas. Klik tiap langkah!
+                </div>
+                <div class="step-container">
+                    <div class="step-box" onclick="showStep(1)">
+                        <h4>Langkah 1</h4>
+                        <p>🎯 Tujuan Pembelajaran</p>
+                    </div>
+                    <div class="step-box" onclick="showStep(2)">
+                        <h4>Langkah 2</h4>
+                        <p>📝 Asesmen</p>
+                    </div>
+                    <div class="step-box" onclick="showStep(3)">
+                        <h4>Langkah 3</h4>
+                        <p>🚀 Aktivitas</p>
+                    </div>
+                </div>
+                <div id="step-1" class="step-detail">
+                    <h3>Tahap 1: Tujuan Pembelajaran (TP)</h3>
+                    <ul>
+                        <li>Rumuskan TP yang jelas dan terukur, merujuk pada CP (Kepka BSKAP No. 046/2025).</li>
+                        <li>TP harus <strong>merespons kesenjangan kompetensi</strong> dari data TKA.</li>
+                        <li>Tentukan indikator ketercapaian yang dapat diamati/diukur.</li>
+                    </ul>
+                </div>
+                <div id="step-2" class="step-detail">
+                    <h3>Tahap 2: Asesmen</h3>
+                    <ul>
+                        <li><strong>Formatif:</strong> Observasi, kuis lisan, exit ticket.</li>
+                        <li><strong>Sumatif:</strong> Tes tertulis, produk, presentasi.</li>
+                        <li>Gunakan tipe soal TKA untuk membiasakan siswa.</li>
+                    </ul>
+                </div>
+                <div id="step-3" class="step-detail">
+                    <h3>Tahap 3: Aktivitas Pembelajaran</h3>
+                    <ul>
+                        <li><strong>Memahami:</strong> Membangun konsep dari berbagai sumber.</li>
+                        <li><strong>Mengaplikasi:</strong> Menerapkan konsep dalam konteks nyata.</li>
+                        <li><strong>Merefleksi:</strong> Menilai proses belajar dan menghubungkan dengan nilai.</li>
+                    </ul>
+                </div>
+
+                <h2 style="margin-top:34px;">📋 Tipe Soal TKA</h2>
+                <div class="tka-types">
+                    <div class="tka-type">
+                        <h4>Pilihan Ganda</h4>
+                        <p>Hanya ada satu jawaban benar.</p>
+                    </div>
+                    <div class="tka-type">
+                        <h4>PGK - MCMA</h4>
+                        <p>Kemungkinan jawaban benar lebih dari satu.</p>
+                    </div>
+                    <div class="tka-type">
+                        <h4>PGK Kategori</h4>
+                        <p>Beberapa pernyataan yang perlu direspons (Benar-Salah).</p>
+                    </div>
+                </div>
+
+                <h2 style="margin-top:34px;">⚖️ Perbandingan Pendekatan</h2>
+                <table class="comparison-table">
+                    <tr>
+                        <th>Aspek</th>
+                        <th>Berbasis Materi (Lama)</th>
+                        <th>Berbasis Kompetensi (Baru)</th>
+                    </tr>
+                    <tr>
+                        <td>Fokus</td>
+                        <td>Penguasaan konten</td>
+                        <td>Kemampuan berpikir & aplikasi</td>
+                    </tr>
+                    <tr>
+                        <td>Aktivitas</td>
+                        <td>Hafal rumus & fakta</td>
+                        <td>Analisis, evaluasi, pemecahan masalah</td>
+                    </tr>
+                    <tr>
+                        <td>Level Berpikir</td>
+                        <td>Surface Learning (C1-C2)</td>
+                        <td>Deep Learning (C1-C6, HOTS)</td>
+                    </tr>
+                    <tr>
+                        <td>Dampak</td>
+                        <td>Tahu "apa", tidak tahu "bagaimana"</td>
+                        <td>Mampu transfer knowledge</td>
+                    </tr>
+                    <tr>
+                        <td>Relevansi TKA</td>
+                        <td>Kesenjangan tinggi</td>
+                        <td>Selaras dengan TKA</td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- ======================= KP 5 ======================= -->
+            <div id="kp5" class="tab-pane">
+                <h2>KP 5: Rencana Tindak Lanjut (RTL)</h2>
+                <p>Isi formulir di bawah ini sebagai komitmen Anda.</p>
+
+                <div class="form-group">
+                    <label>Nama Guru / Mata Pelajaran: *</label>
+                    <input type="text" id="rtlName" placeholder="Contoh: Budi Santoso (SMPN 1 Bandung) - PKN">
+                </div>
+                <div class="form-group">
+                    <label>Jenjang / Sekolah: *</label>
+                    <input type="text" id="rtlSchool" placeholder="Contoh: SMPN 1 Bandung">
+                </div>
+                <div class="form-group">
+                    <label>Kompetensi TKA yang ingin diperkuat: *</label>
+                    <select id="rtlCompetency">
+                        <option value="">-- Pilih Kompetensi --</option>
+                        <option value="Pemahaman Tekstual">Pemahaman Tekstual (Literasi)</option>
+                        <option value="Pemahaman Inferensial">Pemahaman Inferensial (Literasi)</option>
+                        <option value="Evaluasi dan Apresiasi">Evaluasi dan Apresiasi (Literasi)</option>
+                        <option value="Bilangan">Bilangan (Numerasi)</option>
+                        <option value="Aljabar">Aljabar (Numerasi)</option>
+                        <option value="Geometri dan Pengukuran">Geometri dan Pengukuran (Numerasi)</option>
+                        <option value="Data dan Peluang">Data dan Peluang (Numerasi)</option>
+                        <option value="Lainnya">Lainnya</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Aksi Nyata di Kelas: *</label>
+                    <textarea id="rtlAction" rows="4" placeholder="Contoh: Saya akan meminta siswa menganalisis data Pemilu dari tabel..."></textarea>
+                </div>
+                <button class="btn-submit" id="submitBtn" onclick="submitRTL()">🚀 Kirim Komitmen RTL</button>
+                <span id="rtlStatus"></span>
+
+                <div class="counter" style="margin-top:30px;">
+                    <span id="totalRTL">0</span> Komitmen telah terkumpul hari ini!
+                </div>
+
+                <h2>📋 Papan RTL Peserta</h2>
+                <div id="rtlWall"></div>
+            </div>
+
+        </div>
+
+        <div class="footer">
+            ✦ Bimtek Penguatan Literasi & Numerasi · Ditjen PAUD Dikdas PNFI ✦
+        </div>
+    </div>
+
+    <script>
+        // ═══════════════════════════════════════════════════════════════
+        // 🔗 URL APPS SCRIPT (hardcoded)
+        // ═══════════════════════════════════════════════════════════════
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzbtl90z1Vmwz-Ph0CQNIsm8LXxR6TLjfkzguVzSzcdelJ50EfTgx0Q0O4H-0r34nhC/exec";
+
+        // ═══════════════════════════════════════════════════════════════
+        // AURORA ENGINE
+        // ═══════════════════════════════════════════════════════════════
+        (function() {
+            const container = document.getElementById('aurora-container');
+            const colorSets = [
+                ['rgba(0, 255, 100, 0.55)', 'rgba(255, 240, 0, 0.55)', 'rgba(150, 255, 50, 0.55)', 'rgba(255, 200, 0, 0.55)', 'rgba(50, 220, 120, 0.55)'],
+                ['rgba(255, 230, 80, 0.55)', 'rgba(80, 255, 150, 0.55)', 'rgba(230, 200, 0, 0.55)', 'rgba(180, 255, 80, 0.55)', 'rgba(255, 215, 50, 0.55)'],
+                ['rgba(100, 220, 80, 0.55)', 'rgba(255, 210, 0, 0.55)', 'rgba(150, 255, 100, 0.55)', 'rgba(230, 220, 60, 0.55)', 'rgba(200, 255, 0, 0.55)']
+            ];
+            let currentColorSet = 0;
+            const auroras = [];
+
+            for (let i = 0; i < 5; i++) {
+                const aurora = document.createElement('div');
+                aurora.className = 'aurora';
+                aurora.style.background = colorSets[currentColorSet][i];
+                aurora.style.transition = 'opacity 15s ease-in-out';
+                container.appendChild(aurora);
+                auroras.push(aurora);
+                setTimeout(() => { aurora.style.opacity = '0.55'; }, i * 800);
+                animateAurora(aurora, i);
+            }
+
+            function animateAurora(element, index) {
+                let x = Math.random() * 100;
+                let y = Math.random() * 100;
+                let xSpeed = (Math.random() - 0.5) * 0.025;
+                let ySpeed = (Math.random() - 0.5) * 0.025;
+
+                function update() {
+                    x += xSpeed; y += ySpeed;
+                    if (Math.random() < 0.002) {
+                        xSpeed = (Math.random() - 0.5) * 0.025;
+                        ySpeed = (Math.random() - 0.5) * 0.025;
+                    }
+                    if (x > 120) x = -20; if (x < -20) x = 120;
+                    if (y > 120) y = -20; if (y < -20) y = 120;
+                    const parallax = 0.5 + (index * 0.1);
+                    element.style.transform = `translate(${x * parallax}%, ${y * parallax}%) scale(${1 + Math.sin(Date.now() * 0.0004 * (index + 1)) * 0.12})`;
+                    requestAnimationFrame(update);
+                }
+                update();
+            }
+
+            setInterval(() => {
+                currentColorSet = (currentColorSet + 1) % colorSets.length;
+                auroras.forEach(a => { a.style.opacity = '0'; });
+                setTimeout(() => {
+                    auroras.forEach((a, i) => {
+                        a.style.background = colorSets[currentColorSet][i];
+                        a.style.opacity = '0.55';
+                    });
+                }, 2000);
+            }, 45000);
+        })();
+
+        // ═══════════════════════════════════════════════════════════════
+        // TAB SWITCHING
+        // ═══════════════════════════════════════════════════════════════
+        const tabs = document.querySelectorAll('.tab-btn');
+        const panes = document.querySelectorAll('.tab-pane');
+        tabs.forEach(btn => {
+            btn.addEventListener('click', () => {
+                tabs.forEach(b => b.classList.remove('active'));
+                panes.forEach(p => p.classList.remove('active'));
+                btn.classList.add('active');
+                const target = document.getElementById(btn.dataset.tab);
+                if (target) target.classList.add('active');
+            });
+        });
+
+        // ═══════════════════════════════════════════════════════════════
+        // SHUFFLE SOAL KP 2
+        // ═══════════════════════════════════════════════════════════════
+        (function shuffleQuiz() {
+            const quizSection = document.querySelector('#kp2');
+            if (!quizSection) return;
+            const quizItems = Array.from(quizSection.querySelectorAll('.quiz-item'));
+            const quizComplete = document.getElementById('quizComplete');
+            if (quizItems.length === 0 || !quizComplete) return;
+
+            for (let i = quizItems.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [quizItems[i], quizItems[j]] = [quizItems[j], quizItems[i]];
+            }
+            quizItems.forEach((item, index) => {
+                const p = item.querySelector('p');
+                const strongEl = p ? p.querySelector('strong') : null;
+                if (strongEl) strongEl.textContent = (index + 1) + '.';
+                quizSection.insertBefore(item, quizComplete);
+            });
+            quizItems.forEach(item => {
+                const buttonsContainer = item.querySelector('.quiz-buttons');
+                if (buttonsContainer && Math.random() > 0.5) {
+                    const buttons = Array.from(buttonsContainer.children);
+                    buttons.reverse().forEach(btn => buttonsContainer.appendChild(btn));
+                }
+            });
+        })();
+
+        // ═══════════════════════════════════════════════════════════════
+        // CONFETTI
+        // ═══════════════════════════════════════════════════════════════
+        (function() {
+            const container = document.getElementById('confetti-container');
+            let pieces = [];
+            let animationFrame = null;
+            let active = false;
+
+            function random(min, max) { return Math.random() * (max - min) + min; }
+
+            function createPiece() {
+                const colors = ['#6ee7b7', '#fbbf24', '#a3e635', '#fde047', '#4ade80', '#facc15', '#34d399', '#fcd34d', '#84cc16', '#22c55e'];
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                const size = random(6, 14);
+                return {
+                    x: random(0, window.innerWidth),
+                    y: random(-window.innerHeight * 0.2, -10),
+                    vx: random(-3, 3), vy: random(2, 6),
+                    rot: random(0, 360), rotSpeed: random(-8, 8),
+                    color, size, life: random(1.5, 3.5), maxLife: 3.5,
+                    shape: Math.random() > 0.5 ? 'square' : 'circle', opacity: 1
+                };
+            }
+
+            function spawnConfetti(count = 150) {
+                for (let i = 0; i < count; i++) pieces.push(createPiece());
+                if (!active) { active = true; animate(); }
+            }
+
+            function animate() {
+                for (let i = pieces.length - 1; i >= 0; i--) {
+                    const p = pieces[i];
+                    p.x += p.vx; p.y += p.vy;
+                    p.vy += 0.08; p.rot += p.rotSpeed;
+                    p.life -= 0.016;
+                    if (p.life <= 0 || p.y > window.innerHeight + 50) { pieces.splice(i, 1); continue; }
+                    p.opacity = Math.min(1, (p.life / p.maxLife) * 1.2);
+                }
+                container.innerHTML = '';
+                for (const p of pieces) {
+                    const el = document.createElement('div');
+                    el.className = 'confetti-piece';
+                    el.style.left = p.x + 'px';
+                    el.style.top = p.y + 'px';
+                    el.style.width = p.size + 'px';
+                    el.style.height = (p.shape === 'square' ? p.size : p.size * 0.8) + 'px';
+                    el.style.background = p.color;
+                    el.style.borderRadius = p.shape === 'circle' ? '50%' : '2px';
+                    el.style.transform = `rotate(${p.rot}deg)`;
+                    el.style.opacity = p.opacity;
+                    container.appendChild(el);
+                }
+                if (pieces.length > 0) animationFrame = requestAnimationFrame(animate);
+                else {
+                    active = false; container.innerHTML = '';
+                    if (animationFrame) { cancelAnimationFrame(animationFrame); animationFrame = null; }
+                }
+            }
+            window.triggerConfetti = function() { spawnConfetti(180); };
+        })();
+
+        // ═══════════════════════════════════════════════════════════════
+        // KP 2 QUIZ
+        // ═══════════════════════════════════════════════════════════════
+        let score = 0;
+        const totalQuestions = 7;
+
+        function checkAnswer(btn, isCorrect, explanation) {
+            const quizItem = btn.closest('.quiz-item');
+            const feedback = quizItem.querySelector('.feedback');
+            if (quizItem.dataset.answered === "true") return;
+            quizItem.dataset.answered = "true";
+            quizItem.querySelectorAll('.btn-quiz').forEach(b => b.disabled = true);
+            feedback.textContent = explanation;
+            feedback.className = 'feedback ' + (isCorrect ? 'correct' : 'wrong');
+            if (isCorrect) {
+                score++;
+                document.getElementById('score').textContent = score;
+                window.triggerConfetti();
+            } else {
+                quizItem.classList.add('shake');
+                setTimeout(() => quizItem.classList.remove('shake'), 500);
+            }
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const answeredCount = document.querySelectorAll('.quiz-item[data-answered="true"]').length;
+            const percent = (answeredCount / totalQuestions) * 100;
+            document.getElementById('progressFill').style.width = percent + '%';
+            document.getElementById('progressText').textContent = answeredCount;
+            if (answeredCount === totalQuestions) {
+                document.getElementById('quizComplete').style.display = 'block';
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // ACCORDION
+        // ═══════════════════════════════════════════════════════════════
+        document.querySelectorAll('.accordion, .accordion-soal').forEach(acc => {
+            acc.addEventListener('click', function() {
+                this.classList.toggle('active');
+                const panel = this.nextElementSibling;
+                panel.style.maxHeight = panel.style.maxHeight ? null : panel.scrollHeight + "px";
+            });
+        });
+
+        // ═══════════════════════════════════════════════════════════════
+        // REFLECTION
+        // ═══════════════════════════════════════════════════════════════
+        function saveReflection() {
+            const input = document.getElementById('reflectionInput').value.trim();
+            if (!input) { alert('Mohon tuliskan refleksi Anda terlebih dahulu.'); return; }
+            document.getElementById('reflectionSaved').style.display = 'block';
+            window.triggerConfetti();
+            localStorage.setItem('bimtek_reflection', input);
+        }
+        const savedReflection = localStorage.getItem('bimtek_reflection');
+        if (savedReflection) {
+            document.getElementById('reflectionInput').value = savedReflection;
+            document.getElementById('reflectionSaved').style.display = 'block';
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // KP 4 STEPS
+        // ═══════════════════════════════════════════════════════════════
+        function showStep(stepNum) {
+            document.querySelectorAll('.step-detail').forEach(el => el.classList.remove('active'));
+            document.getElementById('step-' + stepNum).classList.add('active');
+            document.querySelectorAll('.step-box').forEach((box, index) => {
+                box.classList.toggle('active', index + 1 === stepNum);
+            });
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // KP 5 RTL SUBMIT
+        // ═══════════════════════════════════════════════════════════════
+        let rtlCount = 0;
+
+        async function submitRTL() {
+            const name = document.getElementById('rtlName').value.trim();
+            const school = document.getElementById('rtlSchool').value.trim();
+            const competency = document.getElementById('rtlCompetency').value;
+            const action = document.getElementById('rtlAction').value.trim();
+            const status = document.getElementById('rtlStatus');
+            const submitBtn = document.getElementById('submitBtn');
+
+            if (!name || !school || !competency || !action) {
+                status.textContent = '⚠️ Mohon lengkapi semua kolom bertanda *';
+                status.style.color = '#f87171';
+                return;
+            }
+
+            submitBtn.disabled = true;
+            status.textContent = '⏳ Mengirim...';
+            status.style.color = '#fbbf24';
+
+            const data = {
+                name: name + ' (' + school + ')',
+                competency: competency,
+                action: action
+            };
+
+            let sentToSheets = false;
+            try {
+                await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                sentToSheets = true;
+            } catch (err) {
+                console.error('Error:', err);
+            }
+
+            const wall = document.getElementById('rtlWall');
+            const note = document.createElement('div');
+            note.className = 'rtl-note';
+            note.innerHTML = `
+                <h4>✅ Komitmen Baru:</h4>
+                <p><strong>Guru:</strong> ${name} (${school})</p>
+                <p><strong>Kompetensi TKA:</strong> ${competency}</p>
+                <p><strong>Aksi:</strong> ${action}</p>
+            `;
+            wall.insertBefore(note, wall.firstChild);
+
+            rtlCount++;
+            document.getElementById('totalRTL').textContent = rtlCount;
+
+            status.textContent = sentToSheets
+                ? '✅ Terkirim ke Google Sheets!'
+                : '❌ Gagal mengirim. Coba lagi.';
+            status.style.color = sentToSheets ? '#6ee7b7' : '#f87171';
+
+            document.getElementById('rtlName').value = '';
+            document.getElementById('rtlSchool').value = '';
+            document.getElementById('rtlCompetency').value = '';
+            document.getElementById('rtlAction').value = '';
+
+            window.triggerConfetti();
+
+            setTimeout(() => {
+                submitBtn.disabled = false;
+                status.textContent = '';
+            }, 4000);
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // BACK TO TOP
+        // ═══════════════════════════════════════════════════════════════
+        window.addEventListener('scroll', () => {
+            const btn = document.getElementById('backToTop');
+            if (window.scrollY > 400) btn.classList.add('show');
+            else btn.classList.remove('show');
+        });
+    </script>
+</body>
+</html>
